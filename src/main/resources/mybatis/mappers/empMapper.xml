@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shinhan.emp">
+
+	<select id="selectAll" resultType="empVO">
+		select *
+		from employees
+		order by
+		1
+	</select>
+
+	<!-- 여러 부서들의 직원정보 조회 where department_id in (10, 20, 30) -->
+	<select id="selectByArray" parameterType="list"
+		resultType="empVO">
+		select * from employees
+		where department_id in
+		<foreach collection="list" item="item" open="(" close=")"
+			separator=",">
+			#{item}
+		</foreach>
+		order by 1
+	</select>
+
+	<delete id="delete" parameterType="int">
+		delete from employees
+		where
+		employee_id = #{empid}
+	</delete>
+
+	<update id="update" parameterType="empVO">
+		update employees set
+		FIRST_NAME=#{first_name},
+		LAST_NAME=#{last_name},
+		EMAIL=#{email},
+		PHONE_NUMBER=#{phone_number},
+		HIRE_DATE=#{hire_date},
+		JOB_ID=#{job_id},
+		SALARY=#{salary},
+		COMMISSION_PCT=#{commission_pct},
+
+		<if test="manager_id != -1">
+			manager_id=#{manager_id},
+		</if>
+		<if test="manager_id == -1">
+			manager_id=null,
+		</if>
+		<if test="department_id != -1">
+			department_id=#{department_id}
+		</if>
+		<if test="department_id == -1">
+			department_id=null
+		</if>
+
+		where
+		EMPLOYEE_ID=#{employee_id}
+	</update>
+
+	<insert id="insert" parameterType="empVO">
+		insert into employees (employee_id, first_name, last_name, email,
+		phone_number, hire_date,
+		job_id, salary, commission_pct, manager_id,
+		department_id)
+		values(#{employee_id},
+		#{first_name},
+		#{last_name},
+		#{email},
+		#{phone_number},
+		#{hire_date},
+		#{job_id},
+		#{salary},
+		#{commission_pct},
+
+		<if test="manager_id == -1">
+			null <!-- 부서가 없으면 jsp페이지에서 -1이 온다. -1부서 없다. 그러므로 null 입력 -->
+		</if>
+		<if test="manager_id != -1">
+			#{manager_id}
+		</if>
+		,
+
+		<if test="department_id == -1">
+			null <!-- 부서가 없으면 jsp페이지에서 -1이 온다. -1부서 없다. 그러므로 null 입력 -->
+		</if>
+		<if test="department_id != -1">
+			#{department_id}
+		</if>
+		)
+	</insert>
+
+	<select id="selectById" resultType="empVO" parameterType="int">
+		select
+		*
+		from employees
+		where employee_id = #{employee_id}
+	</select>
+
+	<!-- map을 parameter로 가져오기 map.put("deptid", 값) map.put("jobid", 값) map.put("salary", 
+		값) map.put("hdate", 값) -->
+	<select id="selectByCondition" resultType="empVO"
+		parameterType="map">
+		select *
+		from employees
+		where (-1 = #{department_id} or
+		department_id = #{department_id})
+		and ('-1' = #{job_id} or job_id =
+		#{job_id})
+		and salary >= #{salary}
+		and hire_date >= #{hire_date}
+	</select>
+
+	<!-- deptid가 -1이면 모든 부서, jobid가 -1이면 모든 job -->
+	<!-- 동적 SQL문 만들기 -->
+	<select id="selectByCondition2" resultType="empVO"
+		parameterType="map">
+		select *
+		from employees
+		where salary >= #{salary}
+		<if test="department_id != '-1'">
+			and department_id = #{department_id}
+		</if>
+		<if test="job_id != '-1'">
+			and job_id = #{job_id}
+		</if>
+		<if test="hire_date != '1900-01-01'">
+			and hire_date >= #{hire_date}
+		</if>
+	</select>
+
+	<select id="selectBySalary" resultType="empVO"
+		parameterType="double">
+		select *
+		from employees
+		where salary >= #{salary}
+	</select>
+
+	<select id="selectByJob" parameterType="String"
+		resultType="empVO">
+		select *
+		from employees
+		where job_id = #{job_id}
+	</select>
+
+	<select id="selectByDept" parameterType="int" resultType="empVO">
+		select
+		*
+		from employees
+		<if test="deptid != -1">
+			where department_id = #{deptid}
+		</if>
+
+	</select>
+
+	<select id="selectJoin" parameterType="String"
+		resultType="com.shinhan.myapp.emp.EmpJoinDTO">
+		select employee_id, first_name, salary, department_name,
+		city,
+		country_name, job_title
+		from employees join departments
+		using(department_id)
+		join locations using(location_id)
+		join countries
+		USING (country_id)
+		join jobs using (job_id)
+
+		<if test="jobid!='-1'">
+			where job_id = #{jobid}
+		</if>
+
+	</select>
+
+	<select id="selectAllJob" resultType="jobVO">
+		select * from jobs
+	</select>
+
+	<select id="selectJoin2" resultType="map" parameterType="String">
+		select
+		employee_id, first_name, salary, department_name, city,
+		country_name,
+		job_title
+		from employees join departments
+		using(department_id)
+		join
+		locations
+		using(location_id)
+		join countries
+		USING (country_id)
+		join jobs
+		using (job_id)
+		<if test="jobid!='-1'">
+			where job_id = #{jobid}
+		</if>
+	</select>
+
+
+</mapper>

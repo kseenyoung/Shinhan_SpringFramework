@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-config.dtd"> <!-- .dtd : mybatis의 schema가 들어있음 -->
+<configuration>
+	<settings>
+		<setting name="logImpl" value="LOG4J" />
+		<setting name="jdbcTypeForNull" value="NULL" /> <!-- 값이 null이 오면 type의 null 값으로 입력 함  -->
+	</settings>
+	<typeAliases>
+		<!-- type : java의 type -->
+		<typeAlias type="com.shinhan.myapp.vo.DeptDTO" alias="deptVO" />
+		<typeAlias type="com.shinhan.myapp.vo.MemberDTO" alias="memberVO" />
+		<typeAlias type="com.shinhan.myapp.emp.JobDTO" alias="jobVO" />
+		<typeAlias type="com.shinhan.myapp.emp.EmpDTO" alias="empVO" />
+	</typeAliases>
+</configuration>

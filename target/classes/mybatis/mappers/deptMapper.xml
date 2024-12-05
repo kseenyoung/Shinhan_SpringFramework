@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shinhan.dept">
+	<resultMap type="com.shinhan.myapp.vo.DeptDTO2" id="deptVO2">
+		<result property="dept_id" column="department_id" />
+		<result property="dept_name" column="department_name" />
+		<result property="manager_id" column="manager_id" />
+		<result property="location_id" column="location_id" />
+	</resultMap>
+
+	<select id="selectAll" resultType="com.shinhan.myapp.vo.DeptDTO">
+		select *
+		from departments
+		order
+		by 1
+	</select>
+
+	<!-- DB column 이름과 Java의 filed이름이 다른 경우, mapping 시 rs.get() => -->
+	<select id="selectAll2" resultMap="deptVO2">
+		select *
+		from employees
+		order by
+		1
+	</select>
+
+	<select id="selectById" resultType="deptVO" parameterType="int">
+		select *
+		from departments
+		where department_id = #{aa}
+	</select>
+
+	<insert id="insert" parameterType="deptVO">
+		insert into
+		departments(department_id, department_name, manager_id, location_id)
+		values(#{department_id}, #{department_name}, #{manager_id},
+		#{location_id})
+	</insert>
+
+	<update id="update" parameterType="deptVO">
+		update departments
+		set
+		department_name = #{department_name},
+		manager_id = #{manager_id},
+		location_id = #{location_id}
+		where department_id = #{department_id}
+	</update>
+
+	<!-- <delete> delete from departments where department_id = #{department_id} 
+		</delete> -->
+
+</mapper>
